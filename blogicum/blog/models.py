@@ -26,6 +26,7 @@ class Location(PublishedBaseModel):
     )
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
 
@@ -44,13 +45,12 @@ class Category(PublishedBaseModel):
     slug = models.SlugField(
         unique=True,
         verbose_name='Идентификатор',
-        help_text=(
-            'Идентификатор страницы для URL; разрешены символы латиницы, '
-            'цифры, дефис и подчёркивание.'
-        )
+        help_text='Идентификатор страницы для URL; разрешены символы '
+                  'латиницы, цифры, дефис и подчёркивание.'
     )
 
     class Meta:
+        ordering = ('title',)
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
@@ -68,16 +68,13 @@ class Post(PublishedBaseModel):
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
-        help_text=(
-            'Если установить дату и время в будущем — '
-            'можно делать отложенные публикации.'
-        )
+        help_text='Если установить дату и время в будущем — '
+                  'можно делать отложенные публикации.'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор публикации',
-        related_name='posts'
     )
     location = models.ForeignKey(
         Location,
@@ -85,14 +82,12 @@ class Post(PublishedBaseModel):
         null=True,
         blank=True,
         verbose_name='Местоположение',
-        related_name='posts'
     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='Категория',
-        related_name='posts'
     )
     image = models.ImageField(
         'Изображение',
@@ -102,6 +97,7 @@ class Post(PublishedBaseModel):
     )
 
     class Meta:
+        default_related_name = 'posts'
         ordering = ('-pub_date',)
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
@@ -120,9 +116,10 @@ class Comment(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='comments',
         verbose_name='Автор'
     )
-    text = models.TextField('Текст комментария')
+    text = models.TextField('Текст')
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Добавлено'
